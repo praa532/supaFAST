@@ -1,0 +1,3 @@
+fastapi==0.103.2
+supabase
+pydantic==2.4.2
