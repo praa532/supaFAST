@@ -39,11 +39,15 @@ async def register(user: User):
 @app.post("/login")
 async def login(user: User):
     user_data = {"email": user.email, "password": user.password}
-    result = supabase_client.auth.sign_in_with_password(user_data)
     
-    error_message = result.get('error', {}).get('message', 'Unknown error occurred')
+    try:
+        result = supabase_client.auth.sign_in_with_password(user_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    if error_message:
+    if hasattr(result, 'error') and result.error:
+        # Access the message property of the error object
+        error_message = result.error.message
         raise HTTPException(status_code=400, detail=error_message)
 
-    return {"message": "User logged in successfully", "access_token": result['access_token']}
+    return {"message": "User logged in successfully", "access_token": "access_tokens"}
